@@ -26,8 +26,9 @@
 </head>
 
 <body>
-  <div id="container">
-    <div class="left-col">
+  <div id="container" v-bind:class="{ show: isCtnShow }">
+    <canvas id="anm-canvas" class="anm-canvas"></canvas>
+    <div class="left-col" v-bind:class="{ show: isShow }">
       <div class="overlay"></div>
 <div class="intrude-less">
 	<header id="header" class="inner">
@@ -56,17 +57,17 @@
 	        
     		
     			
-    			<a class="js-smart-menu" data-idx="0" href="javascript:void(0)">所有文章</a>
+    			<a data-idx="0" v-on:click="openSlider($event, 'innerArchive')" href="javascript:void(0)">所有文章</a>
     			
     			
             
     			
-    			<a class="js-smart-menu" data-idx="1" href="javascript:void(0)">标签</a>
+    			<a data-idx="1" v-on:click="openSlider($event, 'tagcloud')" href="javascript:void(0)">标签</a>
     			
     			
             
     			
-    			<a class="js-smart-menu" data-idx="2" href="javascript:void(0)">关于我</a>
+    			<a data-idx="2" v-on:click="openSlider($event, 'aboutme')" href="javascript:void(0)">关于我</a>
     			
     			
             
@@ -86,7 +87,7 @@
 </div>
 
     </div>
-    <div class="mid-col">
+    <div class="mid-col" v-bind:class="{ show: isShow, hide: isShow === false }">
       <nav id="mobile-nav">
   	<div class="overlay">
   		<div class="slider-trigger"><i class="icon-sort"></i></div>
@@ -110,6 +111,9 @@
 		        
 					<li><a href="/tags/随笔">随笔</a></li>
 		        
+		        
+		        	<li><a href="/archives">所有文章</a></li>
+		        
 				</ul>
 			</nav>
 			<nav class="header-nav">
@@ -127,10 +131,15 @@
 	</div>
 </nav>
 
-      <div class="body-wrap">
-        
+      <div id="wrapper" class="body-wrap">
+        <div class="menu-l">
+          <div class="canvas-wrap">
+            <canvas data-colors="#eaeaea" data-sectionHeight="100" data-contentId="js-content" id="myCanvas1" class="anm-canvas"></canvas>
+          </div>
+          <div id="js-content" class="content-ll">
+            
   
-    <article id="post-我是测试" class="article article-type-post" itemscope itemprop="blogPost">
+    <article id="post-我是测试" class="article article-type-post  article-index" itemscope itemprop="blogPost">
   <div class="article-inner">
     
       <header class="article-header">
@@ -184,7 +193,7 @@
 
 
   
-    <article id="post-hello-world" class="article article-type-post" itemscope itemprop="blogPost">
+    <article id="post-hello-world" class="article article-type-post  article-index" itemscope itemprop="blogPost">
   <div class="article-inner">
     
       <header class="article-header">
@@ -244,6 +253,8 @@
   
 
 
+          </div>
+        </div>
       </div>
       <footer id="footer">
   <div class="outer">
@@ -277,37 +288,73 @@
 
 
     
-<div class="tools-col">
-  <ul class="btn-wrap">
-    
-      <li class="chose" data-hook="tools-section-all"><span class="text">全部</span><i class="icon-book"></i></li>
-    
-    
-      <li data-hook="tools-section-tag"><span class="text">标签</span><i class="icon-price-tags"></i></li>
-    
-    
-    
-      <li data-hook="tools-section-me"><span class="text">我</span><i class="icon-smile"></i></li>
-    
-  </ul>
+<div class="tools-col" v-bind:class="{ show: isShow, hide: isShow === false }" v-on:click="stop($event)">
   <div class="tools-wrap">
     
-    	<section class="tools-section tools-section-all chose">
+    	<section class="tools-section tools-section-all" v-show="innerArchive">
+        <div class="search-wrap">
+          <input class="search-ipt" v-model="search" type="text" placeholder="find something…">
+          <i class="icon-search icon" v-show="search===''"></i>
+          <i class="icon-close icon" v-show="search!==''" v-on:click="clearChose($event)"></i>
+        </div>
+        <div class="widget tagcloud search-tag">
+          <p class="search-tag-wording">tag:</p>
+          <label class="search-switch">
+            <input type="checkbox" v-on:click="toggleTag($event)" v-bind:checked="showTags">
+          </label>
+          <ul class="article-tag-list" v-bind:class="{ show: showTags }">
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" v-on:click="choseTag($event)" class="color3" style="font-size: 12px;">test</a>
+              </li>
+            
+            <div class="clearfix"></div>
+          </ul>
+        </div>
+        <ul class="search-ul">
+          <p v-show="jsonFail" style="padding: 20px; font-size: 12px;">
+            缺失模块。<br/>1、在博客根目录（注意不是yilia根目录）执行以下命令：<br/> npm i hexo-generator-json-content --save<br/><br/>
+            2、在根目录_config.yml里添加配置：
+<pre style="font-size: 12px;" v-show="jsonFail">
+  jsonContent:
+    meta: false
+    pages: false
+    posts:
+      title: true
+      date: true
+      path: true
+      text: true
+      raw: false
+      content: false
+      slug: false
+      updated: false
+      comments: false
+      link: false
+      permalink: false
+      excerpt: false
+      categories: false
+      tags: true
+</pre>
+          </p>
+          <li class="search-li" v-for="item in items" v-show="!item.isHide">
+            <a v-bind:href="item.path|urlformat" class="search-title"><i class="icon-quo-left icon"></i>{{ item.title }}</a>
+            <p class="search-time">
+              <i class="icon-calendar icon"></i>
+              <span>{{ item.date|dateformat }}</span>
+            </p>
+            <p class="search-tag">
+              <i class="icon-price-tags icon"></i>
+              <span v-for="tag in item.tags" v-on:click="choseTag($event, tag.name)">#{{ tag.name }}</span>
+            </p>
+          </li>
+        </ul>
     	</section>
     
 
     
-    	<section class="tools-section tools-section-tag">
-    			<div class="widget tagcloud" id="js-tagcloud">
-    				<a href="/tags/test/" style="font-size: 10px;">test</a>
-    			</div>
-    	</section>
-    
 
     
-
-    
-    	<section class="tools-section tools-section-me">
+    	<section class="tools-section tools-section-me" v-show="aboutme">
   	  	
   	  		<div class="aboutme-wrap" id="js-aboutme">喜欢写作的前端工程师</div>
   	  	
