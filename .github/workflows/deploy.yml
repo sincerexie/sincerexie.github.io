@@ -1,4 +1,4 @@
-name: deploy github pages
+name: deploy homepage
 
 on:
   push:
