@@ -27,7 +27,7 @@ jobs:
       # build static files
       - name: Build
         run: |
-          npm ci
+          rm -rf node_modules && npm ci
           npm run build
           cd dist
           echo 'sincerexie.com' > CNAME
