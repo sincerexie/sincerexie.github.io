@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import PersonalIcon from './PersonalIcon.vue'
+// import PersonalIcon from './PersonalIcon.vue'
 import BlogIcon from './BlogIcon.vue'
 import BooksIcon from './BooksIcon.vue'
 // import { ref } from 'vue'
