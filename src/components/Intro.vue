@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import Menu from './Menu.vue'
+import PrintText from './PrintText.vue'
 // import { ref } from 'vue'
 
 defineProps()
@@ -8,6 +10,8 @@ defineProps()
 <template>
   <div class="container">
     <img class="avatar" src="https://avatars.githubusercontent.com/u/6058689?v=4" />
+    <PrintText />
+    <Menu />
   </div>
 </template>
 
