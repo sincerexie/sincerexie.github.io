@@ -30,7 +30,7 @@ jobs:
           rm -rf node_modules && npm ci
           npm run build
           cd dist
-          echo 'sincerexie.com' > CNAME
+          echo 'sincerexie.top' > CNAME
 
       - name: Deploy
         uses: peaceiris/actions-gh-pages@v3
